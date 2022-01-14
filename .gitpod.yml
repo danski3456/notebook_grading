@@ -3,3 +3,5 @@ tasks:
       gp env --export | awk -F' ' '{print $2}' | tee .env 
     command: |
       echo 'TODO: start app'
+ports:
+  - port: 8000
