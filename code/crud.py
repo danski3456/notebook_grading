@@ -10,6 +10,9 @@ from code.security import verify_password, get_password_hash
 def get_user_by_email(db: Session, username: str):
     return db.query(models.User).filter(models.User.username == username).first()
 
+def get_exercise(db: Session, exercise_id: int):
+    return db.query(models.Exercise).filter(models.Exercise.id == exercise_id).first()
+
 
 # def get_users(db: Session, skip: int = 0, limit: int = 100):
 #     return db.query(models.User).offset(skip).limit(limit).all()
@@ -34,38 +37,17 @@ def create_course(db:Session, course: schemas.CourseBase, user_id: int):
     db.refresh(db_item)
     return db_item
 
-# def create_user_item(db: Session, item: schemas.ItemCreate, user_id: int):
-#     db_item = models.Item(**item.dict(), owner_id=user_id)
-#     db.add(db_item)
-#     db.commit()
-#     db.refresh(db_item)
-#     return db_item
-
-# def authenticate_user(fake_db, username: str, password: str):
-#     user = get_user(fake_db, username)
-#     if not user:
-#         return False
-#     if not verify_password(password, user.hashed_password):
-#         return False
-#     return user
+def create_exercise(db:Session, exercise: schemas.ExerciseBase):
+    db_item = models.Exercise(**exercise.dict())
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    return db_item
 
 
-# async def get_current_user(token: str = Depends(oauth2_scheme)):
-#     credentials_exception = HTTPException(
-#         status_code=status.HTTP_401_UNAUTHORIZED,
-#         detail="Could not validate credentials",
-#         headers={"WWW-Authenticate": "Bearer"},
-#     )
-#     try:
-#         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-#         username: str = payload.get("sub")
-#         if username is None:
-#             raise credentials_exception
-#         token_data = schemas.TokenData(username=username)
-#     except JWTError:
-#         raise credentials_exception
-#     user = get_user(fake_users_db, username=token_data.username)
-#     if user is None:
-#         raise credentials_exception
-#     return user
-
+def create_task(db:Session, task: schemas.TaskBase):
+    db_item = models.Task(**task.dict())
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    return db_item

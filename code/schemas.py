@@ -2,13 +2,35 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+class TaskBase(BaseModel):
+    task_name: str
+    task_answer: str
+    exercise_id: int
+
+class Task(TaskBase):
+    id: int
+    
+    class Config:
+        orm_mode = True
+
+
+class ExerciseBase(BaseModel):
+    name: str
+    course_name: str
+
+class Exercise(ExerciseBase):
+    id: int
+    tasks: list[Task] = []
+    
+    class Config:
+        orm_mode = True
 
 class CourseBase(BaseModel):
     name: str
 
 class Course(CourseBase):
-    name: str
     owner_id: int
+    exercises: list[Exercise] = []
 
     class Config:
         orm_mode = True
