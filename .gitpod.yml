@@ -5,3 +5,5 @@ tasks:
       echo 'TODO: start app'
 ports:
   - port: 8000
+  - port: 5432
+  - port: 5050
