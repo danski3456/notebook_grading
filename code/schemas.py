@@ -1,27 +1,27 @@
 import datetime
 from typing import Optional
-
 from pydantic import BaseModel
 
 class TaskAttemptBase(BaseModel):
     answer: str
     task_id: int
-    attempt_id: int
 
 class TaskAttempt(TaskAttemptBase):
     id: int
+    attempt_id: int
+    is_correct: bool
 
     class Config:
         orm_mode = True        
 
 class AttemptBase(BaseModel):
     username: str
-    answer: str
     exercise_id: int
 
 class Attempt(AttemptBase):
     id: int
     date: datetime.datetime
+    total_correct: int
 
     task_attempts: list[TaskAttempt] = []
 

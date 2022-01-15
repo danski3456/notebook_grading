@@ -1,6 +1,7 @@
 import datetime
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 
 from code.database import Base
 
@@ -55,6 +56,11 @@ class Attempt(Base):
 
     task_attempts = relationship("TaskAttempt", back_populates="attempt")
 
+    @hybrid_property
+    def total_correct(self):
+        return sum(ta.is_correct for ta in self.task_attempts)
+
+
 class TaskAttempt(Base):
     __tablename__ = "task_attempts"
     id = Column(Integer, primary_key=True, index=True)
@@ -63,4 +69,8 @@ class TaskAttempt(Base):
     task = relationship("Task", back_populates="task_attempts") 
 
     attempt_id = Column(Integer, ForeignKey("attempts.id"))
-    attempt = relationship("Attempt", back_populates="task_attempts")    
+    attempt = relationship("Attempt", back_populates="task_attempts")
+
+    @hybrid_property
+    def is_correct(self):
+        return self.answer == self.task.task_answer 

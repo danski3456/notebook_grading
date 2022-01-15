@@ -1,5 +1,6 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+import code.http as http
 from code.security import decode_token, verify_password
 from code.schemas import TokenData
 from code.database import get_db
@@ -18,7 +19,8 @@ async def get_current_user(db: Session = Depends(get_db), token: str = Depends(o
         if username is None:
             raise http.unauthorized_exception
         token_data = TokenData(username=username)
-    except JWTError:
+    except JWTError as e:
+        print(e)
         raise http.unauthorized_exception
     user = get_user_by_email(db, token_data.username)
     if user is None:

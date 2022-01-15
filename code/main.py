@@ -109,3 +109,15 @@ async def add_new_task(
     except Exception as e:
         print(e)
         raise http.general_exception
+
+@app.post("/attempt/", response_model=schemas.Attempt)
+async def add_new_task(
+    attempt: schemas.AttemptBase,
+    task_attempts: list[schemas.TaskAttemptBase],
+    db: Session = Depends(get_db),
+):
+    try:
+        return crud.create_attempt(db, attempt, task_attempts)
+    except Exception as e:
+        print(e)
+        raise http.general_exception

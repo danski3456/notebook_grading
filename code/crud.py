@@ -51,3 +51,21 @@ def create_task(db:Session, task: schemas.TaskBase):
     db.commit()
     db.refresh(db_item)
     return db_item
+
+
+def create_attempt(
+    db: Session,
+    attempt: schemas.Attempt,
+    task_attempts: list[schemas.TaskAttempt]
+):
+    db_attempt = models.Attempt(**attempt.dict())
+    db.add(db_attempt)
+    db.commit()
+    db.refresh(db_attempt)
+    attempt_id = db_attempt.id
+
+    tas = [models.TaskAttempt(**ta.dict(), attempt_id=attempt_id) for ta in task_attempts]
+    for ta in tas: db.add(ta)
+    db.commit()
+    
+    return db_attempt 
