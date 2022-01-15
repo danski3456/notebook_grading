@@ -9,7 +9,9 @@ PASS = os.getenv("POSTGRES_PASSWORD")
 DB_NAME = os.getenv("POSTGRES_DB")
 HOST = os.getenv("POSTGRES_URL")
 
-DATABASE_URL = f"postgresql://{USER}:{PASS}@{HOST}/{DB_NAME}"
+DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL is None:
+    DATABASE_URL = f"postgresql://{USER}:{PASS}@{HOST}/{DB_NAME}"
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
