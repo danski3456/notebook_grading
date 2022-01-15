@@ -1,4 +1,5 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Datetime
+import datetime
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 
 from code.database import Base
@@ -32,6 +33,8 @@ class Exercise(Base):
     course = relationship("Course", back_populates="exercises")
     tasks = relationship("Task", back_populates="exercise")
 
+    attempts = relationship("Attempt", back_populates="exercise")
+
 class Task(Base):
     __tablename__ = "tasks"
     id = Column(Integer, primary_key=True, index=True)
@@ -40,10 +43,24 @@ class Task(Base):
     exercise_id = Column(Integer, ForeignKey("exercises.id"))
     exercise = relationship("Exercise", back_populates="tasks")
 
+    task_attempts = relationship("TaskAttempt", back_populates="task")
+
 class Attempt(Base):
     __tablename__ = "attempts"
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String)
-     = Column(String)
+    date = Column(DateTime, default=datetime.datetime.utcnow)
     exercise_id = Column(Integer, ForeignKey("exercises.id"))
-    exercise = relationship("Exercise", back_populates="tasks")
+    exercise = relationship("Exercise", back_populates="attempts")
+
+    task_attempts = relationship("TaskAttempt", back_populates="attempt")
+
+class TaskAttempt(Base):
+    __tablename__ = "task_attempts"
+    id = Column(Integer, primary_key=True, index=True)
+    answer = Column(String)
+    task_id = Column(Integer, ForeignKey("tasks.id"))
+    task = relationship("Task", back_populates="task_attempts") 
+
+    attempt_id = Column(Integer, ForeignKey("attempts.id"))
+    attempt = relationship("Attempt", back_populates="task_attempts")    

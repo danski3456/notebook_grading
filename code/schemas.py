@@ -1,6 +1,32 @@
+import datetime
 from typing import Optional
 
 from pydantic import BaseModel
+
+class TaskAttemptBase(BaseModel):
+    answer: str
+    task_id: int
+    attempt_id: int
+
+class TaskAttempt(TaskAttemptBase):
+    id: int
+
+    class Config:
+        orm_mode = True        
+
+class AttemptBase(BaseModel):
+    username: str
+    answer: str
+    exercise_id: int
+
+class Attempt(AttemptBase):
+    id: int
+    date: datetime.datetime
+
+    task_attempts: list[TaskAttempt] = []
+
+    class Config:
+        orm_mode = True
 
 class TaskBase(BaseModel):
     task_name: str

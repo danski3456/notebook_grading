@@ -4,7 +4,6 @@ services:
       build: .
       volumes:
         - ./code:/app/code
-        - ./alembic:/app/alembic
       ports:
         - "8000:8000"
       command: uvicorn code.main:app --reload --host 0.0.0.0
