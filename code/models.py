@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, ForeignKeyConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 
@@ -28,9 +28,9 @@ class Course(Base):
 class Exercise(Base):
     __tablename__ = "exercises"
     
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    course_name = Column(String, ForeignKey("courses.name"))
+    #id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, primary_key=True)
+    course_name = Column(String, ForeignKey("courses.name"), primary_key=True)
     course = relationship("Course", back_populates="exercises")
     tasks = relationship("Task", back_populates="exercise")
 
@@ -38,34 +38,52 @@ class Exercise(Base):
 
 class Task(Base):
     __tablename__ = "tasks"
-    id = Column(Integer, primary_key=True, index=True)
-    task_name = Column(String)
+    __table_args__ = (
+        ForeignKeyConstraint(["exercise_name", "course_name"], ["exercises.name", "exercises.course_name"]),
+    )
+    #id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, primary_key=True)
+    exercise_name = Column(String, primary_key=True)
+    course_name = Column(String, primary_key=True)
     task_answer = Column(String)
-    exercise_id = Column(Integer, ForeignKey("exercises.id"))
+    disabled = Column(Boolean, default=False)
     exercise = relationship("Exercise", back_populates="tasks")
 
     task_attempts = relationship("TaskAttempt", back_populates="task")
 
 class Attempt(Base):
     __tablename__ = "attempts"
+    __table_args__ = (
+        ForeignKeyConstraint(["exercise_name", "course_name"], ["exercises.name", "exercises.course_name"]),
+    )
+
     id = Column(Integer, primary_key=True, index=True)
+    exercise_name = Column(String)
+    course_name = Column(String)
     username = Column(String)
     date = Column(DateTime, default=datetime.datetime.utcnow)
-    exercise_id = Column(Integer, ForeignKey("exercises.id"))
     exercise = relationship("Exercise", back_populates="attempts")
 
     task_attempts = relationship("TaskAttempt", back_populates="attempt")
 
     @hybrid_property
     def total_correct(self):
-        return sum(ta.is_correct for ta in self.task_attempts)
+        return sum(ta.is_correct for ta in self.task_attempts if not ta.task.disabled)
 
 
 class TaskAttempt(Base):
     __tablename__ = "task_attempts"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["task_name", "exercise_name", "course_name"],
+            ["tasks.name", "tasks.exercise_name", "tasks.course_name"]
+        ),
+    )
     id = Column(Integer, primary_key=True, index=True)
     answer = Column(String)
-    task_id = Column(Integer, ForeignKey("tasks.id"))
+    task_name = Column(String, nullable=False)
+    exercise_name = Column(String, nullable=False)
+    course_name = Column(String, nullable=False)
     task = relationship("Task", back_populates="task_attempts") 
 
     attempt_id = Column(Integer, ForeignKey("attempts.id"))

@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 class TaskAttemptBase(BaseModel):
     answer: str
-    task_id: int
+    task_name: str
 
 class TaskAttempt(TaskAttemptBase):
     id: int
@@ -16,7 +16,9 @@ class TaskAttempt(TaskAttemptBase):
 
 class AttemptBase(BaseModel):
     username: str
-    exercise_id: int
+    exercise_name: str
+    course_name: str
+
 
 class Attempt(AttemptBase):
     id: int
@@ -29,12 +31,12 @@ class Attempt(AttemptBase):
         orm_mode = True
 
 class TaskBase(BaseModel):
-    task_name: str
+    name: str
     task_answer: str
-    exercise_id: int
+    exercise_name: str
+    course_name: str
 
 class Task(TaskBase):
-    id: int
     
     class Config:
         orm_mode = True
@@ -45,7 +47,6 @@ class ExerciseBase(BaseModel):
     course_name: str
 
 class Exercise(ExerciseBase):
-    id: int
     tasks: list[Task] = []
     
     class Config:

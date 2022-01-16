@@ -10,9 +10,12 @@ from code.security import verify_password, get_password_hash
 def get_user_by_email(db: Session, username: str):
     return db.query(models.User).filter(models.User.username == username).first()
 
-def get_exercise(db: Session, exercise_id: int):
-    return db.query(models.Exercise).filter(models.Exercise.id == exercise_id).first()
-
+def get_exercise(db: Session, exercise_name: str, course_name: str):
+    out = db.query(models.Exercise).filter(
+        models.Exercise.name == exercise_name,
+        models.Exercise.course_name == course_name
+    ).first()
+    return out
 
 # def get_users(db: Session, skip: int = 0, limit: int = 100):
 #     return db.query(models.User).offset(skip).limit(limit).all()
@@ -47,9 +50,9 @@ def create_exercise(db:Session, exercise: schemas.ExerciseBase):
 
 def create_task(db:Session, task: schemas.TaskBase):
     db_item = models.Task(**task.dict())
-    db.add(db_item)
+    db_item = db.merge(db_item)
     db.commit()
-    db.refresh(db_item)
+    # db.refresh(db_item)
     return db_item
 
 
@@ -64,7 +67,12 @@ def create_attempt(
     db.refresh(db_attempt)
     attempt_id = db_attempt.id
 
-    tas = [models.TaskAttempt(**ta.dict(), attempt_id=attempt_id) for ta in task_attempts]
+    tas = [models.TaskAttempt(
+        **ta.dict(),
+        attempt_id=db_attempt.id,
+        course_name=attempt.course_name,
+        exercise_name=attempt.exercise_name,
+        ) for ta in task_attempts]
     for ta in tas: db.add(ta)
     db.commit()
     

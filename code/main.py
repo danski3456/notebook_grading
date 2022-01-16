@@ -2,7 +2,7 @@ import os
 from typing import Optional
 from datetime import datetime, timedelta
 
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, status, Request, Form
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from jose import JWTError
@@ -14,14 +14,28 @@ import code.http as http
 from code.database import SessionLocal, engine, get_db
 from code.security import verify_password, create_access_token
 from code.login import authenticate_user, get_current_active_user
+from fastapi.templating import Jinja2Templates
+
+templates = Jinja2Templates(directory="code/templates")
+
 app = FastAPI()
 
 
 models.Base.metadata.create_all(bind=engine)
 
+@app.get("/users/")
+def form_post(request: Request):
+    result = "Type a number"
+    return templates.TemplateResponse('new_user.html', context={'request': request, 'result': result})
+
 
 @app.post("/users/", response_model=schemas.User)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+def create_user(
+    db: Session = Depends(get_db),
+    username: str = Form(...),
+    password: str = Form(...)
+    ):
+    user = schemas.UserCreate(username=username, password=password)
     db_user = crud.get_user_by_email(db, username=user.username)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -50,15 +64,6 @@ async def login_for_access_token(
 async def read_users_me(current_user: User = Depends(get_current_active_user)):
     return current_user
 
-# @app.post("/course/", response_model=schemas.Course)
-# def add_new_course(
-#     course: schemas.CourseBase,
-#     current_user: User = Depends(get_current_active_user())
-#     ):
-    
-#     user_id = current_user.id
-#     db = get_db()
-#     return crud.create_course(db, course, user_id)
 
 @app.post("/course/", response_model=schemas.Course)
 async def add_new_course(
@@ -98,8 +103,10 @@ async def add_new_task(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    exercise_id = task.exercise_id
-    exercise = crud.get_exercise(db, exercise_id)
+    exercise_name = task.exercise_name
+    course_name = task.course_name
+    exercise = crud.get_exercise(db, exercise_name, course_name)
+    print(exercise)
     if exercise is None:
         raise http.general_exception
     if exercise.course.owner_id != current_user.id:
