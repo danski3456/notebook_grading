@@ -35,6 +35,7 @@ class TaskBase(BaseModel):
     task_answer: str
     exercise_name: str
     course_name: str
+    disabled: Optional[bool] = False
 
 class Task(TaskBase):
     
