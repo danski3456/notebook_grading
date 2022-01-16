@@ -45,7 +45,7 @@ class Task(Base):
     name = Column(String, primary_key=True)
     exercise_name = Column(String, primary_key=True)
     course_name = Column(String, primary_key=True)
-    task_answer = Column(String)
+    answer = Column(String)
     disabled = Column(Boolean, default=False)
     exercise = relationship("Exercise", back_populates="tasks")
 
@@ -75,13 +75,13 @@ class TaskAttempt(Base):
     __tablename__ = "task_attempts"
     __table_args__ = (
         ForeignKeyConstraint(
-            ["task_name", "exercise_name", "course_name"],
+            ["name", "exercise_name", "course_name"],
             ["tasks.name", "tasks.exercise_name", "tasks.course_name"]
         ),
     )
     id = Column(Integer, primary_key=True, index=True)
     answer = Column(String)
-    task_name = Column(String, nullable=False)
+    name = Column(String, nullable=False)
     exercise_name = Column(String, nullable=False)
     course_name = Column(String, nullable=False)
     task = relationship("Task", back_populates="task_attempts") 
@@ -91,4 +91,4 @@ class TaskAttempt(Base):
 
     @hybrid_property
     def is_correct(self):
-        return self.answer == self.task.task_answer 
+        return self.answer == self.task.answer 

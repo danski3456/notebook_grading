@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 class TaskAttemptBase(BaseModel):
     answer: str
-    task_name: str
+    name: str
 
 class TaskAttempt(TaskAttemptBase):
     id: int
@@ -32,7 +32,7 @@ class Attempt(AttemptBase):
 
 class TaskBase(BaseModel):
     name: str
-    task_answer: str
+    answer: str
     exercise_name: str
     course_name: str
     disabled: Optional[bool] = False
