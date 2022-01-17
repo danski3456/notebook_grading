@@ -196,16 +196,16 @@ def build_student_version(course_name, exercise_name):
     tasks_content = "".join(tasks_content[1:]).replace("TASKS = ", "")
     submission = f"""
 
-    proposed_solution = {{
-        'attempt': {{
-            'course_name': COURSE_NAME,
-            'exercise_name': EXERCISE_NAME,
-            'username': STUDENT_NAME,
-        }},
-        'task_attempts': {tasks_content}
+proposed_solution = {{
+    'attempt': {{
+        'course_name': COURSE_NAME,
+        'exercise_name': EXERCISE_NAME,
+        'username': STUDENT_NAME,
+    }},
+    'task_attempts': {tasks_content}
 
-    }}
-    check_solution(proposed_solution)
+}}
+check_solution(proposed_solution)
     """
     cell = nbf.new_code_cell(submission)
     new_cells.append(cell)
