@@ -65,6 +65,7 @@ def build_exercise(username, config, url="https://notebook-grading.herokuapp.com
         )
         if r.status_code != 200:
             return r.text
+        my_exercise = r.json()
 
     tasks = config["tasks"]
     my_tasks = my_exercise["tasks"]
