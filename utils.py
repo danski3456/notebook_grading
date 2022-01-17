@@ -3,8 +3,7 @@ from getpass import getpass
 
 def build_exercise(username, config, url="https://notebook-grading.herokuapp.com"):
 
-    #password = getpass()
-    password = "12345"
+    password = getpass()
     headers = {
     "accept": "application/json",
     "Content-Type": "application/x-www-form-urlencoded"
