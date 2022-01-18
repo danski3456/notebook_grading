@@ -24,6 +24,7 @@ class Attempt(AttemptBase):
     id: int
     date: datetime.datetime
     total_correct: int
+    total_enabled: int
 
     task_attempts: list[TaskAttempt] = []
 

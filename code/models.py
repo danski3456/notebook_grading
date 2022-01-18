@@ -70,6 +70,10 @@ class Attempt(Base):
     def total_correct(self):
         return sum(ta.is_correct for ta in self.task_attempts if not ta.task.disabled)
 
+    @hybrid_property
+    def total_enabled(self):
+        return sum(1 for ta in self.task_attempts if not ta.task.disabled)
+
 
 class TaskAttempt(Base):
     __tablename__ = "task_attempts"

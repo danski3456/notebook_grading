@@ -128,3 +128,69 @@ async def add_new_task(
     except Exception as e:
         print(e)
         raise http.general_exception
+
+
+@app.get("/course/{course_name}/{username}")#, response_model=list[schemas.Attempt])
+def form_post(
+    username: str,
+    course_name: str,
+    request: Request,
+    db: Session = Depends(get_db)
+    ):
+
+    from sqlalchemy import func, and_
+
+    subq = db.query(
+        models.Attempt.exercise_name,
+        models.Attempt.course_name,
+        func.max(models.Attempt.date).label('maxdate')
+    ).group_by(models.Attempt.exercise_name, models.Attempt.course_name).subquery('t2')
+
+    query = db.query(models.Attempt).join(
+        subq,
+        and_(
+            models.Attempt.exercise_name == subq.c.exercise_name,
+            models.Attempt.course_name == subq.c.course_name,
+            models.Attempt.date == subq.c.maxdate
+        )
+    ).all()
+    # return query
+
+    response = []
+    for attempt in query:
+        for task in attempt.task_attempts:
+            row = {
+                "course": attempt.course_name,
+                "exercise": attempt.exercise_name,
+                "task": task.name,
+                "is_correct": task.is_correct,
+            }
+            response.append(row)
+    return templates.TemplateResponse(
+        'course_student.html', 
+        context={
+            'request': request,
+            'items': query,
+            # 'student': username,
+        })
+
+    return response
+
+    # course = db.query(models.Course).filter(models.Course.name == course_name).first()
+    # attempts = {}
+    # for e in course.exercises:
+    #     print(e.attempts)
+    #     attempts[e.name] = None
+    #     for attempt in e.attempts:
+    #         if username == attempt.username:
+    #             date = attempt.date
+    #             if attempts[e.name] is None or attempts[e.name].date < date:
+    #                 attempts[e.name] = attempt
+
+
+    # for e in attempts:
+    #     print(e, attempts[e].__dict__)
+
+    # return db.query(models.Attempt).filter(
+    #     models.Attempt.course_name == course_name,
+    #     models.Attempt.username == username).all()
