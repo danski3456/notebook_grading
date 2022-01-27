@@ -11,6 +11,7 @@ delete_re = re.compile("#ddd")
 tasks_re = re.compile("^#ttt")
 
 filename = sys.argv[1] # get path
+folder = sys.argv[2]
 
 filename = Path(filename)
 with open(filename, 'r') as fh: data = json.load(fh)
@@ -77,6 +78,8 @@ new_cells.append(cell)
 nb["cells"] = new_cells
 
 new_name = filename.with_name(filename.stem + "_public" + filename.suffix)
+if folder is not None:
+    new_name = (filename.parent / folder) / new_name.name
 
 with open(new_name, 'w') as f:
         nbf_write(nb, f, 4)
