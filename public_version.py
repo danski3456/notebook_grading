@@ -78,8 +78,9 @@ new_cells.append(cell)
 nb["cells"] = new_cells
 
 new_name = filename.with_name(filename.stem + "_public" + filename.suffix)
+print(new_name)
 if folder is not None:
     new_name = (filename.parent / folder) / new_name.name
-
+print(new_name)
 with open(new_name, 'w') as f:
         nbf_write(nb, f, 4)
