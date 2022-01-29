@@ -61,8 +61,7 @@ print(tasks_content)
 try:
     tasks_content = "".join(tasks_content[1:]).replace("TASKS = ", "")
 except TypeError as e:
-    print("entre")
-    print(tasks_content)
+    print("".join(tasks_content[1:]))
     raise(e)
 submission = f"""
 
