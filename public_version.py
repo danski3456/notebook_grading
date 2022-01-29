@@ -8,7 +8,7 @@ from nbformat import write as nbf_write
 start_re = re.compile("#sss")
 end_re = re.compile("#eee")
 delete_re = re.compile("#ddd")
-tasks_re = re.compile("^#ttt")
+tasks_re = re.compile("#ttt")
 
 filename = sys.argv[1] # get path
 folder = sys.argv[2]
