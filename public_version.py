@@ -57,8 +57,12 @@ for c in cells:
         cell = nbf.new_code_cell(new_src)
         new_cells.append(cell)
 
-    
-tasks_content = "".join(tasks_content[1:]).replace("TASKS = ", "")
+print(tasks_content)    
+try:
+    tasks_content = "".join(tasks_content[1:]).replace("TASKS = ", "")
+except TypeError as e:
+    print(tasks_content)
+    raise(e)
 submission = f"""
 
 proposed_solution = {{
