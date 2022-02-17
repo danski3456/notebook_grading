@@ -5,6 +5,9 @@ from datetime import datetime, timedelta
 from fastapi import Depends, FastAPI, HTTPException, status, Request, Form
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+
+from sqlalchemy import func, and_
+
 from jose import JWTError
 
 from code import crud, models, schemas
@@ -138,7 +141,6 @@ def form_post(
     db: Session = Depends(get_db)
     ):
 
-    from sqlalchemy import func, and_
 
     subq = db.query(
         models.Attempt.exercise_name,
@@ -176,7 +178,66 @@ def form_post(
 
     return response
 
+
+@app.get("/course/{course_name}")#, response_model=list[schemas.Attempt])
+def course_stats(
+    course_name: str,
+    request: Request,
+    db: Session = Depends(get_db)
+    ):
+
+
+
     # course = db.query(models.Course).filter(models.Course.name == course_name).first()
+
+    subq = db.query(
+        models.Attempt.username,
+        models.Attempt.exercise_name,
+        models.Attempt.course_name,
+        func.max(models.Attempt.date).label('maxdate')
+    ).group_by(
+        models.Attempt.exercise_name,
+        models.Attempt.course_name,
+        models.Attempt.username
+    ).subquery('t2')
+
+    query = db.query(models.Attempt).join(
+        subq,
+        and_(
+            models.Attempt.exercise_name == subq.c.exercise_name,
+            models.Attempt.course_name == subq.c.course_name,
+            models.Attempt.date == subq.c.maxdate,
+            models.Attempt.username == subq.c.username,
+        )
+    ).all()
+
+    response = []
+    for attempt in query:
+        row = {}
+        row["Username"] = attempt.username
+        row["Exercise"] = attempt.exercise_name
+        row["# Correct"] = attempt.total_correct
+        row["# Total"] = attempt.total_enabled
+        row["Last Attempt Date"] = attempt.date
+        response.append(row)
+        # for task in attempt.task_attempts:
+        #     row = {
+        #         "course": attempt.course_name,
+        #         "exercise": attempt.exercise_name,
+        #         "task": task.name,
+        #         "is_correct": task.is_correct,
+        #     }
+        #     response.append(row)
+
+    return templates.TemplateResponse(
+        'course_stats.html', 
+        context={
+            'request': request,
+            'items': response,
+            # 'student': username,
+        })
+
+    return response
     # attempts = {}
     # for e in course.exercises:
     #     print(e.attempts)
