@@ -287,7 +287,8 @@ def course_stats(
 
     df = pd.DataFrame(response)
     df = pd.pivot(df, index="Username", columns="Exercise", values="# Correct")
-    df["Obtained Points"] = df.sum(axis=1).fillna(0).astype(int)
+    df = df.fillna(0).astype(int)
+    df["Obtained Points"] = df.sum(axis=1)
     df["Maximum Available Points"] = course.total_points
     df["Final Grade"] = (df["Obtained Points"] / df["Maximum Available Points"]).apply(lambda x: f"{x * 100:.0f} %")
     
