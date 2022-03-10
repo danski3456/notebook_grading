@@ -6,6 +6,8 @@ services:
         - ./code:/app/code
       ports:
         - "8000:8000"
+      depends_on:
+        - db
       command: uvicorn code.main:app --reload --host 0.0.0.0
       env_file: .env
     db:

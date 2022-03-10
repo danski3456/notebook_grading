@@ -2,6 +2,7 @@ import os
 from typing import Optional
 from datetime import datetime, timedelta
 
+import pandas as pd
 from fastapi import Depends, FastAPI, HTTPException, status, Request, Form
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -133,7 +134,7 @@ async def add_new_task(
         raise http.general_exception
 
 
-@app.get("/course/{course_name}/{username}")#, response_model=list[schemas.Attempt])
+#@app.get("/course/{course_name}/{username}")#, response_model=list[schemas.Attempt])
 def form_post(
     username: str,
     course_name: str,
@@ -211,6 +212,7 @@ def course_stats(
         )
     ).all()
 
+
     response = []
     for attempt in query:
         row = {}
@@ -237,21 +239,63 @@ def course_stats(
             # 'student': username,
         })
 
-    return response
-    # attempts = {}
-    # for e in course.exercises:
-    #     print(e.attempts)
-    #     attempts[e.name] = None
-    #     for attempt in e.attempts:
-    #         if username == attempt.username:
-    #             date = attempt.date
-    #             if attempts[e.name] is None or attempts[e.name].date < date:
-    #                 attempts[e.name] = attempt
+@app.get("/course/{course_name}/summary")#, response_model=list[schemas.Attempt])
+def course_stats(
+    course_name: str,
+    request: Request,
+    db: Session = Depends(get_db)
+    ):
 
 
-    # for e in attempts:
-    #     print(e, attempts[e].__dict__)
 
-    # return db.query(models.Attempt).filter(
-    #     models.Attempt.course_name == course_name,
-    #     models.Attempt.username == username).all()
+    course = db.query(models.Course).filter(models.Course.name == course_name).first()
+
+    subq = db.query(
+        models.Attempt.username,
+        models.Attempt.exercise_name,
+        models.Attempt.course_name,
+        func.max(models.Attempt.date).label('maxdate')
+    ).group_by(
+        models.Attempt.exercise_name,
+        models.Attempt.course_name,
+        models.Attempt.username
+    ).subquery('t2')
+
+    query = db.query(models.Attempt).join(
+        subq,
+        and_(
+            models.Attempt.exercise_name == subq.c.exercise_name,
+            models.Attempt.course_name == subq.c.course_name,
+            models.Attempt.date == subq.c.maxdate,
+            models.Attempt.username == subq.c.username,
+        )
+    ).all()
+
+
+
+    response = []
+    for attempt in query:
+        row = {}
+        # students[attempt.username] += attempt.total_correct
+        row["Username"] = attempt.username
+        row["Exercise"] = f"{attempt.exercise_name} (/{attempt.total_enabled})"
+        row["# Correct"] = attempt.total_correct
+        row["# Total"] = attempt.total_enabled
+        row["Last Attempt Date"] = attempt.date
+        response.append(row)
+    # response = {"students": students, "total": course.total_points}
+
+    df = pd.DataFrame(response)
+    df = pd.pivot(df, index="Username", columns="Exercise", values="# Correct")
+    df["Total"] = df.sum(axis=1)
+    df["Obtained Points"] = course.total_points
+    df["Final Grade"] = (df["Total"] / df["Maxium Possible"]).apply(lambda x: f"{x * 100:.0f} %")
+    
+
+    return templates.TemplateResponse(
+        'course_summary.html', 
+        context={
+            'request': request,
+            'items': df.to_html(),
+            # 'student': username,
+        })

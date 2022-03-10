@@ -25,6 +25,10 @@ class Course(Base):
     owner = relationship("User", back_populates="courses")
     exercises = relationship("Exercise", back_populates="course")
 
+    @hybrid_property
+    def total_points(self):
+        return sum(ex.total_points for ex in self.exercises)
+
 class Exercise(Base):
     __tablename__ = "exercises"
     
@@ -35,6 +39,9 @@ class Exercise(Base):
     tasks = relationship("Task", back_populates="exercise")
 
     attempts = relationship("Attempt", back_populates="exercise")
+    @hybrid_property
+    def total_points(self):
+        return sum(1 if not t.disabled else 0 for t in self.tasks)
 
 class Task(Base):
     __tablename__ = "tasks"
