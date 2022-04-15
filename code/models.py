@@ -1,10 +1,13 @@
+#===================================================={ all imports }============================================================
+
 import datetime
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, ForeignKeyConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 
-from code.database import Base
+from .database import Base
 
+#====================================================={ User model }============================================================
 
 class User(Base):
     __tablename__ = "users"
@@ -17,6 +20,8 @@ class User(Base):
     courses = relationship("Course", back_populates="owner")
     # items = relationship("Item", back_populates="owner")
 
+#===================================================={ Course model }===========================================================
+
 class Course(Base):
     __tablename__ = "courses"
     
@@ -28,6 +33,8 @@ class Course(Base):
     @hybrid_property
     def total_points(self):
         return sum(ex.total_points for ex in self.exercises)
+
+#==================================================={ Exercise model }==========================================================
 
 class Exercise(Base):
     __tablename__ = "exercises"
@@ -43,6 +50,8 @@ class Exercise(Base):
     def total_points(self):
         return sum(1 if not t.disabled else 0 for t in self.tasks)
 
+#====================================================={ Task model }============================================================
+
 class Task(Base):
     __tablename__ = "tasks"
     __table_args__ = (
@@ -57,6 +66,8 @@ class Task(Base):
     exercise = relationship("Exercise", back_populates="tasks")
 
     task_attempts = relationship("TaskAttempt", back_populates="task")
+
+#==================================================={ Attempt model }============================================================
 
 class Attempt(Base):
     __tablename__ = "attempts"
@@ -81,6 +92,7 @@ class Attempt(Base):
     def total_enabled(self):
         return sum(1 for ta in self.task_attempts if not ta.task.disabled)
 
+#==================================================={ TaskAttemt model }=========================================================
 
 class TaskAttempt(Base):
     __tablename__ = "task_attempts"
@@ -103,3 +115,5 @@ class TaskAttempt(Base):
     @hybrid_property
     def is_correct(self):
         return self.answer == self.task.answer 
+
+#==================================================={ Code ends here }==========================================================

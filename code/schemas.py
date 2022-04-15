@@ -1,6 +1,10 @@
+#===================================================={ all imports }============================================================
+
 import datetime
-from typing import Optional
 from pydantic import BaseModel
+from typing import Optional
+
+#==================================================={ Task schemas }============================================================
 
 class TaskAttemptBase(BaseModel):
     answer: str
@@ -43,6 +47,7 @@ class Task(TaskBase):
     class Config:
         orm_mode = True
 
+#================================================={ Exercise schemas }==========================================================
 
 class ExerciseBase(BaseModel):
     name: str
@@ -54,6 +59,8 @@ class Exercise(ExerciseBase):
     class Config:
         orm_mode = True
 
+#=================================================={ Course schemas }===========================================================
+
 class CourseBase(BaseModel):
     name: str
 
@@ -64,6 +71,7 @@ class Course(CourseBase):
     class Config:
         orm_mode = True
 
+#==================================================={ User schemas }============================================================
 
 class UserBase(BaseModel):
     username: str
@@ -83,9 +91,13 @@ class User(UserBase):
 # class UserInDB(User):
 #     hashed_password: str
 
+#=================================================={ Token schemas }===========================================================
+
 class Token(BaseModel):
     access_token: str
     token_type: str
 
 class TokenData(BaseModel):
     username: Optional[str] = None
+
+#=================================================={ Code ends here }==========================================================

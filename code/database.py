@@ -1,8 +1,11 @@
-import os
+#===================================================={ all imports }============================================================
 
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+
+#==================================================={ global objects }==========================================================
 
 USER = os.getenv("POSTGRES_USER")
 PASS = os.getenv("POSTGRES_PASSWORD")
@@ -19,6 +22,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
+#==================================================={ get_db function }=========================================================
 
 def get_db():
     db = SessionLocal()
@@ -26,3 +30,5 @@ def get_db():
         yield db
     finally:
         db.close()
+
+#====================================================={ Code ends here }========================================================
