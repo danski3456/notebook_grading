@@ -25,7 +25,7 @@ async def add_new_task(task: schemas.TaskBase,
     exercise_name = task.exercise_name
     course_name = task.course_name
     exercise = crud.get_exercise(db, exercise_name, course_name)
-    print(exercise)
+    #print(exercise)
     if exercise is None:
         raise general_exception
     if exercise.course.owner_id != current_user.id:
@@ -33,6 +33,6 @@ async def add_new_task(task: schemas.TaskBase,
     try:
         return crud.create_task(db, task)
     except Exception as e:
-        print(e)
+        #print(e)
         raise general_exception
 #======================================================{ Code ends }===========================================================

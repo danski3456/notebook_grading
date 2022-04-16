@@ -8,8 +8,12 @@ from code.main import app
 
 client = TestClient(app)
 
-TEST_USERNAME = 'test@gmail.com'
-TEST_PASSWORD = 'test'
+USERNAME = 'test@gmail.com'
+PASSWORD = 'test'
+
+ANSWER = 'test answer'
+
+NAME = 'test'
 
 #====================================================={ login test }============================================================
 
@@ -25,27 +29,27 @@ def token(username:str, password:str):
 def create_new_user(username:str, password:str):
     response = client.post("/users/", data={"username": username, "password": password})
     if response.status_code == 200:
-        print('New user created:', response.json().get("username"))
+        print('New user created with username:', response.json().get("username"))
     else:
         print('Error creating user:', response.json())
 
 #================================================{ create new course test }======================================================
 
 def create_new_course(name:str):
-    result = token(TEST_USERNAME, TEST_PASSWORD)
+    result = token(USERNAME, PASSWORD)
     if not result:
         print ('Error getting token')
         return
     response = client.post('/course/', json={"name":name}, headers={"Authorization": "Bearer " + result.get("access_token")})
     if response.status_code == 200:
-        print('New course created:', response.json().get("name"))
+        print('New course created with name:', response.json().get("name"))
     else:
         print('Error creating course:', response.json())
 
 #==============================================={ create new exercise test }=====================================================
 
 def create_new_exercise(name:str, course_name:str):
-    result = token(TEST_USERNAME, TEST_PASSWORD)
+    result = token(USERNAME, PASSWORD)
     if not result:
         print ('Error getting token')
         return
@@ -55,9 +59,34 @@ def create_new_exercise(name:str, course_name:str):
                            headers={"Authorization": "Bearer " + result.get("access_token")}
                            )
     if response.status_code == 200:
-        print('New exercise created:', response.json().get("name"))
+        print('New exercise created with name:', response.json().get("name"))
     else:
         print('Error creating exercise:', response.json())
+        
+#================================================{ create new task test }========================================================
+
+def create_new_task(name:str, answer:str, exercise_name:str, course_name:str):
+    result = token(USERNAME, PASSWORD)
+    if not result:
+        print ('Error getting token')
+        return
+    
+    data = {
+            "name":  name,
+            "answer": answer,
+            "exercise_name": exercise_name,
+            "course_name": course_name,
+            "disabled": False
+            }
+    
+    response = client.post('/task/', 
+                           json=data,
+                           headers={"Authorization": "Bearer " + result.get("access_token")}
+                           )
+    if response.status_code == 200:
+        print('New task created with name:', response.json().get("name"))
+    else:
+        print('Error creating task:', response.json())
 
 #==============================================={ create new attempt test }======================================================
 
@@ -65,7 +94,7 @@ def create_new_attempt(exercise_name:str, course_name:str, answer:str, name:str)
     
     attempt = {
         "attempt": {
-            "username": TEST_USERNAME,
+            "username": USERNAME,
             "exercise_name": exercise_name,
             "course_name": course_name
             },
@@ -80,21 +109,24 @@ def create_new_attempt(exercise_name:str, course_name:str, answer:str, name:str)
     response = client.post('/attempt/', json=attempt)
     
     if response.status_code == 200:
-        print('New attempt created:', response.json())
+        print('New attempt created with id:', response.json().get("id"))
     else:
         print('Error creating attempt:', response.json())
-
 
 #====================================================={ main part }==============================================================
 
 if __name__ == '__main__':
-    print('Automated test started')
-    create_new_user(TEST_USERNAME, TEST_PASSWORD)
+    print('=========== Automated test started===========')
     print()
-    create_new_course('Test course')
+    create_new_user(USERNAME, PASSWORD)
     print()
-    create_new_exercise('Test exercise', 'Test course')
+    create_new_course(NAME)
     print()
-    create_new_attempt('Test exercise', 'Test course', 'Test answer', 'Test name')
-    
+    create_new_exercise(NAME, NAME)
+    print()
+    create_new_task(NAME, ANSWER, NAME, NAME)
+    print()
+    create_new_attempt(NAME, NAME, ANSWER, NAME)
+    print()
+    print('========== Automated test completed ==========')
 #===================================================={ code ends here }==========================================================

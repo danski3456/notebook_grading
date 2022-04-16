@@ -23,14 +23,14 @@ async def add_new_exercise(exercise: schemas.ExerciseBase,
     
     course_name = exercise.course_name
     user_courses = [c.name for c in current_user.courses]
-    print(user_courses, course_name)
+    #print(user_courses, course_name)
     
     if course_name not in user_courses:
         raise unauthorized_exception
     try:
         return crud.create_exercise(db, exercise)
     except Exception as e:
-        print(e)
+        #print(e)
         raise general_exception
     
 #======================================================{ Code ends }===========================================================
