@@ -8,4 +8,6 @@ python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 alembic==1.7.5
 jinja2==3.0.3
-pandas
+pandas==1.4.2
+requests==2.27.1
+pytest==7.1.1
