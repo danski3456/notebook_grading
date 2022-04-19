@@ -11,3 +11,4 @@ jinja2==3.0.3
 pandas==1.4.2
 requests==2.27.1
 pytest==7.1.1
+pygradus==0.2.6
