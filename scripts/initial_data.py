@@ -1,8 +1,10 @@
 import requests
 from pygradus import create_exercise, check_solution
 
+url = "http://0.0.0.0:8000"
+
 data = {"username": "admin", "password": "admin"}
-r = requests.post("http://0.0.0.0:8000/users/", data=data)
+r = requests.post(url + "/users/", data=data)
 
 if r.status_code == 200:
     print("User created correctly")
@@ -24,7 +26,7 @@ config = {
 }
 
 
-result = create_exercise("admin", config, url="http://0.0.0.0:8000")
+result = create_exercise("admin", config, url=url)
 print("First exercise", result)
 
 tasks = [
@@ -39,7 +41,7 @@ config = {
     "tasks": tasks,
 }
 
-result = create_exercise("admin", config, url="http://0.0.0.0:8000")
+result = create_exercise("admin", config, url=url)
 print("Second exercise", result)
 
 
@@ -64,7 +66,8 @@ proposed_solution = {
         },
     ],
 }
-check_solution(proposed_solution)
+result = check_solution(proposed_solution, url=url)
+print(result)
 
 
 ## Exercise 2
@@ -81,7 +84,8 @@ proposed_solution = {
         },
     ],
 }
-check_solution(proposed_solution)
+result = check_solution(proposed_solution, url=url)
+print(result)
 
 proposed_solution = {
     "attempt": {
@@ -96,4 +100,5 @@ proposed_solution = {
         },
     ],
 }
-check_solution(proposed_solution)
+result = check_solution(proposed_solution, url=url)
+print(result)

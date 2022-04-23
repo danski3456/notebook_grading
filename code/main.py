@@ -5,10 +5,23 @@ from fastapi import FastAPI
 from .database import engine
 from . import models as models
 from .routes import users, token, exercise, course, task, attempt, results
+from fastapi.middleware.cors import CORSMiddleware
+
 
 # ==================================================={ global objects }==========================================================
 
 app = FastAPI()  # FastAPI object
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 models.Base.metadata.create_all(bind=engine)  # creating database
 
