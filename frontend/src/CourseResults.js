@@ -7,7 +7,6 @@ export default function CourseResults(props) {
 
     return (
         <div>
-            <h1>Hola!</h1>
             <ul>
                 {Object.keys(results).map((ex, index) => (
                     <li key={index}>{ex}: {results[ex]["correct"]} / {results[ex]["total"]}</li>
