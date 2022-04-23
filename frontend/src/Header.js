@@ -11,13 +11,26 @@ export default function Profile() {
     };
 
     return (
-        <>
-            <h1>Title</h1>
-            <a href="/">Home</a>
-            <a href="/profile">Profile</a>
-            <a href="/results">Results</a>
-            <button onClick={signOut}>Sign Out</button>
-        </>
+        <div className="header">
+            <div className="title">
+                <h1>Title</h1>
+            </div>
+            <div className="menu">
+                <div className="menu-item">
+                    <a href="/">Home</a>
+                </div>
+                <div className="menu-item">
+                    <a href="/profile">Profile</a>
+                </div>
+                <div className="menu-item">
+                    <a href="/results">Results</a>
+                </div>
+                <div className="menu-item">
+                    <button onClick={signOut}>Sign Out</button>
+                </div>
+
+            </div>
+        </div>
     )
 
 }
