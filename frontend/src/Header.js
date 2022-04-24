@@ -13,7 +13,7 @@ export default function Profile() {
     return (
         <div className="header">
             <div className="title">
-                <h1>Title</h1>
+                <h1>Gradus</h1>
             </div>
             <div className="menu">
                 <div className="menu-item">

@@ -43,7 +43,7 @@ export default function Login() {
                 {fetchToken() ? (
                     <p>you are logged in</p>
                 ) : (
-                    <div>
+                    <div className="login-form">
                         <form>
                             <label style={{ marginRight: 10 }}>Input Username</label>
                             <input
