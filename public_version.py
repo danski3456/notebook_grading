@@ -86,7 +86,7 @@ check_solution(proposed_solution)
     name_ = str(filename.name).split(".")
     if len(name_) != 2:
         raise ValueError("Filename contains dots")
-    name_ = name_.split(".")[0] + "-student." + name_[1]
+    name_ = name_[0] + "-student." + name_[1]
 
     output_name = Path(folder) / name_ 
     output_name.parent.mkdir(exist_ok=True, parents=True)
