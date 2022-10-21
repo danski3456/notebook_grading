@@ -18,12 +18,3 @@ services:
       - ./postgres-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-
-  frontend:
-    build: frontend/
-    command: npm start
-    volumes:
-      - ./frontend/:/usr/app/
-      - /usr/app/node_modules
-    ports:
-      - "3000:3000"
